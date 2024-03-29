@@ -125,9 +125,10 @@ const tt = new Timetable(await CSV.fetchJSON("fukutetsu-timetable.csv"));
 //const fare = await HapilineFare.create();
 
 const showTime = (idbase, fromst, tost) => {
-  const trs = tt.getNextTrains(fromst, tost, 3);
+  const maxn = 3;
+  const trs = tt.getNextTrains(fromst, tost, maxn);
   const nowt = new Time().quantizeSeconds();
-  for (let i = 0; i < 3; i++) {
+  for (let i = 0; i < maxn; i++) {
     const c = document.getElementById(idbase + "n" + (i + 1));
     const tr = trs[i];
     if (!tr) {
@@ -139,7 +140,7 @@ const showTime = (idbase, fromst, tost) => {
     const dt = (tot.toMinutes() - fromt.toMinutes() + 24 * 60) % (24 * 60);
     const rm = fromt.toSeconds() - nowt.toSeconds();
     //c.textContent = `${tr.ID} ${fromt}→${tot} ${dt}分 あと${Math.floor(rm / 60)}分${rm % 60}秒で出発`;
-    c.innerHTML = `${fromt.toStringMin()}→${tot.toStringMin()}(${dt}分) ${Math.floor(rm / 60) + 1}分後 <span class=trid>${tr.ID}</span>`;
+    c.innerHTML = `${fromt.toStringMin()}→${tot.toStringMin()}(${dt}分) ${Math.floor(rm / 60) + 1}分後 <span class=trid>${tr.ID} ${tr.種別}</span>`;
   }
 };
 const show = () => {
