@@ -22,7 +22,7 @@ const parse = async (fn, dir) => {
       }
     }
     const d = {
-      ID: dir + (i - 1) + "番目",
+      ID: dir + (i - 1),
       種別: dt[1],
       方向: dir,
       始発駅: start,
