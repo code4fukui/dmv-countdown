@@ -22,19 +22,15 @@ export class Timetable {
   }
   getNextTrains(fromstation, tostation, maxlen = 3, nowm) {
     const trs = this.getTrains(fromstation, tostation);
-    console.log(fromstation, tostation, trs)  
     const now = (nowm || new Time()).quantizeMinutes().toMinutes();
-    console.log("now", now);
 
     const res = trs.filter(i => {
       const from = i[fromstation + "_発"];
       const fromt = new Time(from);
       const d = now - fromt.toMinutes();
-    console.log(d, now, fromt.toMinutes(), fromt);
       return d <= 0;
     });
     if (res.length > maxlen) res.length = maxlen;
-    console.log(res)
     return res;
   }
   getStations() {

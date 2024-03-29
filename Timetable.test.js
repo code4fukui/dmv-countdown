@@ -43,7 +43,7 @@ Deno.test("all stations", async () => {
 Deno.test("simple", async () => {
   const res = tt.getTrains("西鯖江", "福井駅");
   t.assertEquals(res.length, 29);
-  t.assertEquals(res[0].ID, "下り1");
+  t.assertEquals(res[0].ID, "下り1番目");
   t.assertEquals(res[0].たけふ新_発, "5:30");
 });
 Deno.test("reverse", async () => {
