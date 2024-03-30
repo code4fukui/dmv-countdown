@@ -1,13 +1,14 @@
 <!DOCTYPE html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><link rel="icon" href="data:">
-<title>発車カウントダウン - 福井鉄道</title>
+<title>発車カウントダウン - つつじバス</title>
 </head><body>
-<h1>発車カウントダウン<div>福井鉄道</div></h1>
+<h1>発車カウントダウン<div>つつじバス</div></h1>
 
 <div class=center>
-  <span id=spannow></span>
-
+  <input type=time id=spannow><label><input type=checkbox checked id=chknow>今</label><br>
+  
   <span class=nowrap>
-  <select id=selfrom></select>→<select id=selto><select> <span id=spanfare></span>
+  <select id=selfrom></select><br>
+  →<select id=selto><select><button id=btnswop>↕</button><span id=spanfare></span>
   </span>
 </div>
 
@@ -16,13 +17,8 @@
 <span id=box1n1></span><br>
 <span id=box1n2></span><br>
 <span id=box1n3></span><br>
-</div>
-
-<div class=box>
-<ruby><span id=from2></span><rt id=from2ruby></rt></ruby>→<ruby><span id=to2></span><rt id=to2ruby></rt></ruby><br>
-<span id=box2n1></span><br>
-<span id=box2n2></span><br>
-<span id=box2n3></span><br>
+<span id=box1n4></span><br>
+<span id=box1n5></span><br>
 </div>
 
 <!--
@@ -33,18 +29,18 @@
 
 <hr>
 <footer>
-出典: <a href=https://fukutetsu.jp/train/timetable_all.php>電車全列車時刻表｜福井鉄道株式会社｜福井県の鉄道会社・福鉄（ふくてつ）のホームページ</a><br>
-DATA: → <a href=https://github.com/code4fukui/fukutetsu-opendata/blob/main/scrapeTimetable.js>scrapeTimetable.js</a> でスクレイピング → <a href=https://github.com/code4fukui/fukutetsu-opendata/blob/main/hapiline-kudari.csv>上り</a>/<a href=https://github.com/code4fukui/fukutetsu-opendata/blob/main/hapiline-kudari.csv>下り</a> → <a href=https://github.com/code4fukui/fukutetsu-opendata/blob/main/makeTimetable.js>makeTimetable.js</a> で加工 → <a href=https://github.com/code4fukui/fukutetsu-opendata/blob/main/fukutetsu-opendata.csv>CSVファイル</a><br>
+出典: <a href=https://www.pref.fukui.lg.jp/doc/dx-suishin/opendata/gtfs_jp_d/fil/gtfs_sabae.zip>鯖江市コミュニティバスつつじバス</a> （<a href=https://www.pref.fukui.lg.jp/doc/dx-suishin/opendata/gtfs_jp.html>バス情報データ（GTFS-JPデータ） | 福井県ホームページ</a>）<br>
 <!--DATA: → <a href=https://github.com/code4fukui/fukutetsu-opendata/blob/main/hapiline-fare.csv>運賃CSV</a> / <a href=https://github.com/code4fukui/fukutetsu-opendata/blob/main/hapiline-station.csv>駅CSV</a><br>
 -->
 forked from: <a href=https://code4fukui.github.io/hapiline-timetable/>発車カウントダウン - ハピラインふくい</a><br>
-APP: <a href=https://github.com/code4fukui/fukutetsu-opendata/>MIT License by Code for FUKUI</a><br>
+Lib: <a href=https://github.com/code4fukui/GTFS/>GTFS ES module</a><br>
+APP: <a href=https://github.com/code4fukui/tsutsujibus-opendata/>MIT License by Code for FUKUI</a><br>
 <br>
 </footer>
 
 <style>
 :root {
-  --main-bg-color: #1d5aa0;
+  --main-bg-color: #f383d5;
 }
 .box {
   margin: .5em;
@@ -88,8 +84,8 @@ h1 div {
 }
 #spannow {
   display: inline-block;
-  padding: .5em 1.5em;
-  margin: 0;
+  padding: .2em 1em;
+  margin: 0.2em;
   font-size: 140%;
 }
 .acontainer {
@@ -116,20 +112,19 @@ a {
 
 
 <script type="module">
-import { CSV } from "https://code4fukui.github.io/CSV/CSV.js";
-import { Timetable } from "./Timetable.js";
-//import { HapilineFare } from "./HapilineFare.js";
+import { GTFS } from "https://code4fukui.github.io/GTFS/GTFS.js";
 import { Time } from "https://js.sabae.cc/DateTime.js";
+import { fetchBin } from "https://js.sabae.cc/fetchBin.js";
 import { removeHash } from "https://js.sabae.cc/removeHash.js";
 import { addComma } from "https://js.sabae.cc/addComma.js";
 
-const tt = new Timetable(await CSV.fetchJSON("fukutetsu-timetable.csv"));
+const tt = new GTFS(await fetchBin("./gtfs_sabae.zip"));
 //const fare = await HapilineFare.create();
 
-const showTime = (idbase, fromst, tost) => {
-  const maxn = 3;
-  const trs = tt.getNextTrains(fromst, tost, maxn);
-  const nowt = new Time().quantizeSeconds();
+const showTime = (idbase, fromst, tost, now) => {
+  const maxn = 5;
+  const nowt = new Time(now).quantizeSeconds();
+  const trs = tt.getNextTripTimes(fromst, tost, maxn, nowt);
   for (let i = 0; i < maxn; i++) {
     const c = document.getElementById(idbase + "n" + (i + 1));
     const tr = trs[i];
@@ -137,25 +132,41 @@ const showTime = (idbase, fromst, tost) => {
       c.textContent = "";
       continue;
     }
-    const fromt = new Time(tr[fromst + "_発"]);
-    const tot = new Time(tr[tost + "_着"] || tr[tost + "_発"]);
+    const fromt = new Time(tr.from);
+    const tot = new Time(tr.to);
     const dt = (tot.toMinutes() - fromt.toMinutes() + 24 * 60) % (24 * 60);
-    const rm = fromt.toSeconds() - nowt.toSeconds();
+    let rm = fromt.toSeconds() - nowt.toSeconds();
+    if (rm < 0) rm += 24 * 60 * 60;
     //c.textContent = `${tr.ID} ${fromt}→${tot} ${dt}分 あと${Math.floor(rm / 60)}分${rm % 60}秒で出発`;
-    c.innerHTML = `${fromt.toStringMin()}→${tot.toStringMin()}(${dt}分) ${Math.floor(rm / 60) + 1}分後 <span class=trid>${tr.ID} ${tr.種別}</span>`;
+    c.innerHTML = `${fromt.toStringMin()}→${tot.toStringMin()}(${dt}分) ${Math.floor(rm / 60 / 60) > 0 ? Math.floor(rm / 60 / 60) + "時間" : ""}${Math.floor(rm / 60 % 60) + 1}分後`; // <span class=trid>${tr.ID} ${tr.種別}</span>`;
   }
 };
 const show = () => {
-  spannow.textContent = `現在時刻 ${new Time().quantizeSeconds().toString()}`;
+  if (chknow.checked) {
+    //spannow.value = new Time().quantizeSeconds().toString();
+    spannow.value = new Time().quantizeMinutes().toString();
+  }
+  const now = spannow.value;
   const from = selfrom.value;
   const to = selto.value;
-  showTime("box1", from, to);
-  showTime("box2", to, from);
+  showTime("box1", from, to, now);
+  //showTime("box2", to, from, now);
 };
 
-const initdefault = ["たけふ新", "ベル前"];
+spannow.oninput = () => {
+  chknow.checked = false;
+  show();
+};
+chknow.oninput = () => {
+  if (chknow.checked) show();
+};
+btnswop.onclick = () => {
+  [selfrom.value, selto.value] = [selto.value, selfrom.value];
+};
 
-const sts = tt.getStations();
+const initdefault = ["JR鯖江駅（１番のりば）", "福井高専"];
+
+const sts = tt.getStopNames();
 for (const sel of [selfrom, selto]) {
   for (const st of sts) {
     const opt = document.createElement("option");
@@ -166,8 +177,8 @@ for (const sel of [selfrom, selto]) {
       const to = selto.value;
       from1.textContent = from;
       to1.textContent = to;
-      from2.textContent = to;
-      to2.textContent = from;
+      //from2.textContent = to;
+      //to2.textContent = from;
       show();
 
       /*
@@ -203,7 +214,11 @@ selfrom.value = init[0] || initdefault[0];
 selto.value = init[1] || initdefault[1];
 selfrom.onchange();
 
-setInterval(show, 1000);
+setInterval(() => {
+  if (chknow.checked) {
+    show();
+  }
+}, 1000);
 show();
 
 </script>
