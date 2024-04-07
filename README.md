@@ -1,6 +1,6 @@
-# fukutetsu-countdown
+# dmv-countdown
 
-https://code4fukui.github.io/tsutsujibus-countdown/
+https://code4fukui.github.io/dmv-countdown/
 
 ## GTFS
 

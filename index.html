@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><link rel="icon" href="data:">
-<title>発車カウントダウン - つつじバス</title>
+<title>発車カウントダウン - DMV</title>
 </head><body>
-<h1>発車カウントダウン<div>つつじバス</div></h1>
+<h1>発車カウントダウン<div>DMV</div></h1>
 
 <div class=center>
   <input type=time id=spannow><label><input type=checkbox checked id=chknow>今</label><br>
@@ -29,18 +29,19 @@
 
 <hr>
 <footer>
-出典: <a href=https://www.pref.fukui.lg.jp/doc/dx-suishin/opendata/gtfs_jp_d/fil/gtfs_sabae.zip>鯖江市コミュニティバスつつじバス</a> （<a href=https://www.pref.fukui.lg.jp/doc/dx-suishin/opendata/gtfs_jp.html>バス情報データ（GTFS-JPデータ） | 福井県ホームページ</a>）<br>
+出典: <a href=https://opendata.pref.tokushima.lg.jp/dataset/2652.html>阿佐海岸鉄道株式会社【DMV】（GTFS-JP) - Our Open Data</a><br>
+参考: <a href=https://ontrip.jal.co.jp/chugoku-shikoku/17520272>道路も線路も一台で。世界初DMVで巡る、徳島県・海陽町でしかできない旅 (1/2) - OnTrip JAL</a><br>
 <!--DATA: → <a href=https://github.com/code4fukui/fukutetsu-opendata/blob/main/hapiline-fare.csv>運賃CSV</a> / <a href=https://github.com/code4fukui/fukutetsu-opendata/blob/main/hapiline-station.csv>駅CSV</a><br>
 -->
-forked from: <a href=https://code4fukui.github.io/hapiline-timetable/>発車カウントダウン - ハピラインふくい</a><br>
+forked from: <a href=https://code4fukui.github.io/tsutsujibus-countdown/>発車カウントダウン - つつじバス</a><br>
 Lib: <a href=https://github.com/code4fukui/GTFS/>GTFS ES module</a><br>
-APP: <a href=https://github.com/code4fukui/tsutsujibus-countdown/>MIT License by Code for FUKUI</a><br>
+APP: <a href=https://github.com/code4fukui/dmv-countdown/>MIT License by Code for FUKUI</a><br>
 <br>
 </footer>
 
 <style>
 :root {
-  --main-bg-color: #f383d5;
+  --main-bg-color: #1796e1;
 }
 .box {
   margin: .5em;
@@ -118,8 +119,11 @@ import { fetchBin } from "https://js.sabae.cc/fetchBin.js";
 import { removeHash } from "https://js.sabae.cc/removeHash.js";
 import { addComma } from "https://js.sabae.cc/addComma.js";
 
-const tt = new GTFS(await fetchBin("./gtfs_sabae.zip"));
+const fn = "feed_asatetu_asakaigantetsudo_20230721_104156.zip";
+const tt = new GTFS(await fetchBin(fn));
+console.log(tt.getStops());
 //const fare = await HapilineFare.create();
+const initdefault = ["阿波海南駅", "宍喰駅"];
 
 const showTime = (idbase, fromst, tost, now) => {
   const maxn = 5;
@@ -163,8 +167,6 @@ chknow.oninput = () => {
 btnswop.onclick = () => {
   [selfrom.value, selto.value] = [selto.value, selfrom.value];
 };
-
-const initdefault = ["JR鯖江駅（１番のりば）", "福井高専"];
 
 const sts = tt.getStopNames();
 for (const sel of [selfrom, selto]) {
