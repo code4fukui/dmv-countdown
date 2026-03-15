@@ -1,6 +1,8 @@
 # dmv-countdown
 
-One-sentence description: A web application that displays the countdown to the next departure times for the Digital Mini Vehicle (DMV) service in Fukui, Japan.
+> 日本語のREADMEはこちらです: [README.ja.md](README.ja.md)
+
+A web application that displays the countdown to the next departure times for the Digital Mini Vehicle (DMV) service in Fukui, Japan.
 
 ## Demo
 https://code4fukui.github.io/dmv-countdown/
