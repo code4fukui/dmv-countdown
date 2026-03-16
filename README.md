@@ -26,4 +26,4 @@ This project requires the GTFS.js library, which is imported from the URL `https
 This project uses GTFS data provided by the Fukui Prefecture government, which can be downloaded from the URL `https://www.pref.fukui.lg.jp/doc/dx-suishin/opendata/gtfs_jp.html`.
 
 ## License
-This project is licensed under the MIT License. See the `LICENSE` file for more details.
+MIT License — see [LICENSE](LICENSE).

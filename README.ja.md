@@ -1,6 +1,6 @@
 # 発車カウントダウン - DMV
 
-阿佐海岸鉄道の発車時刻をカウントダウンで表示するWebアプリです。GTFSデータを使って発車時刻を表示します。
+阿佐海岸鉄道の発車時刻をカウントダウンで表示するWebアプリです。
 
 ## デモ
 [https://code4fukui.github.io/dmv-countdown/](https://code4fukui.github.io/dmv-countdown/)
